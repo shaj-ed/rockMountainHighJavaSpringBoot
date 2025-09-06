@@ -9,9 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,8 +35,8 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentEntity> createStudent(@Valid @RequestBody StudentEntity student) {
-        StudentEntity savedStudent = studentService.createStudent(student);
+    public ResponseEntity<StudentEntity> createStudent(@Valid @RequestPart StudentEntity student, @RequestPart MultipartFile avatar) throws IOException {
+        StudentEntity savedStudent = studentService.createStudent(student, avatar);
         return new ResponseEntity<>(savedStudent, HttpStatus.OK);
     }
 
@@ -55,6 +58,19 @@ public class StudentController {
         StudentEntity student = studentService.getStudentById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
         return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getStudentImageById(@PathVariable Long id) {
+        StudentEntity student = studentService.getStudentById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        if(student.getAvatar() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] image = student.getAvatar();
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
     @PutMapping("/{id}")

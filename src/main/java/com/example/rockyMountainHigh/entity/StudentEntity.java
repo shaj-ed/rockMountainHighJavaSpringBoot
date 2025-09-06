@@ -39,19 +39,24 @@ public class StudentEntity {
     @Column(name = "enrollment_date")
     private LocalDate enrollmentDate;
 
+    @Lob
+    @Column(name = "avatar", columnDefinition = "LONGBLOB")
+    private byte[] avatar;
+
     // Default constructor required by JPA
     public StudentEntity() {
         this.enrollmentDate = LocalDate.now();
     }
 
     // Constructor with parameters for creating new student
-    public StudentEntity(String firstName, String lastName, String email, Integer age, String course) {
+    public StudentEntity(String firstName, String lastName, String email, Integer age, String course, byte[] avatar) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.age = age;
         this.course = course;
         this.enrollmentDate = LocalDate.now();
+        this.avatar = avatar;
     }
 
     public void setId(Long id) {
@@ -108,5 +113,13 @@ public class StudentEntity {
 
     public void setEnrollmentDate(LocalDate enrollmentDate) {
         this.enrollmentDate = enrollmentDate;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 }
